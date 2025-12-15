@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pepper Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eeeeee;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .section {
+            background: #ffffff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        button {
+            margin: 4px;
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        input {
+            padding: 6px;
+            width: 80%;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Pepper Control - Stable Backend</h1>
+
+<div class="section">
+    <h2>Speech</h2>
+    <input type="text" id="speechText" placeholder="Text for Pepper">
+    <br>
+    <button onclick="say()">Speak</button>
+</div>
+
+<div class="section">
+    <h2>Audio</h2>
+    <button onclick="audio('up')">Volume +</button>
+    <button onclick="audio('down')">Volume -</button>
+</div>
+
+<div class="section">
+    <h2>Motion</h2>
+    <button onclick="motion('wake')">Wake</button>
+    <button onclick="motion('rest')">Rest</button>
+    <button onclick="motion('stop')">Stop</button>
+</div>
+
+<div class="section">
+    <h2>Postures</h2>
+    <button onclick="posture('standinit')">StandInit</button>
+    <button onclick="posture('standzero')">StandZero</button>
+    <button onclick="posture('crouch')">Crouch</button>
+</div>
+
+<div class="section">
+    <h2>Greetings</h2>
+    <button onclick="gesture('greetings','hey1')">Hey 1</button>
+    <button onclick="gesture('greetings','hey3')">Hey 3</button>
+    <button onclick="gesture('greetings','hey4')">Hey 4</button>
+    <button onclick="gesture('greetings','hey6')">Hey 6</button>
+</div>
+
+<div class="section">
+    <h2>Positive Emotions</h2>
+    <button onclick="gesture('emotions_positive','enthusiastic4')">Enthusiastic 4</button>
+    <button onclick="gesture('emotions_positive','enthusiastic5')">Enthusiastic 5</button>
+    <button onclick="gesture('emotions_positive','happy4')">Happy 4</button>
+    <button onclick="gesture('emotions_positive','hysterical1')">Hysterical</button>
+</div>
+
+<div class="section">
+    <h2>Calm</h2>
+    <button onclick="gesture('calm','calm1')">Calm 1</button>
+    <button onclick="gesture('calm','calm5')">Calm 5</button>
+    <button onclick="gesture('calm','calm6')">Calm 6</button>
+</div>
+
+<div class="section">
+    <h2>Thinking</h2>
+    <button onclick="gesture('thinking','think1')">Think 1</button>
+    <button onclick="gesture('thinking','think3')">Think 3</button>
+    <button onclick="gesture('thinking','think4')">Think 4</button>
+    <button onclick="gesture('thinking','think6')">Think 6</button>
+    <button onclick="gesture('thinking','think8')">Think 8</button>
+    <button onclick="gesture('thinking','wait1')">Wait 1</button>
+    <button onclick="gesture('thinking','wait2')">Wait 2</button>
+    <button onclick="gesture('thinking','wait3')">Wait 3</button>
+</div>
+
+<div class="section">
+    <h2>Desperate</h2>
+    <button onclick="gesture('desperate','des1')">Desperate 1</button>
+    <button onclick="gesture('desperate','des2')">Desperate 2</button>
+    <button onclick="gesture('desperate','des4')">Desperate 4</button>
+    <button onclick="gesture('desperate','des5')">Desperate 5</button>
+</div>
+
+<div class="section">
+    <h2>Yes Responses</h2>
+    <button onclick="gesture('responses_yes','yes1')">Yes 1</button>
+    <button onclick="gesture('responses_yes','yes2')">Yes 2</button>
+    <button onclick="gesture('responses_yes','yes3')">Yes 3</button>
+</div>
+
+<div class="section">
+    <h2>No Responses</h2>
+    <button onclick="gesture('responses_no','no1')">No 1</button>
+    <button onclick="gesture('responses_no','no2')">No 2</button>
+    <button onclick="gesture('responses_no','no3')">No 3</button>
+    <button onclick="gesture('responses_no','nothing')">Nothing</button>
+</div>
+
+<div class="section">
+    <h2>Understanding</h2>
+    <button onclick="gesture('understanding','understand1')">Understand 1</button>
+    <button onclick="gesture('understanding','understand2')">Understand 2</button>
+    <button onclick="gesture('understanding','understand3')">Understand 3</button>
+    <button onclick="gesture('understanding','understand5')">Understand 5</button>
+</div>
+
+<div class="section">
+    <h2>Not Understanding</h2>
+    <button onclick="gesture('not_understanding','dontknow1')">Dont know 1</button>
+    <button onclick="gesture('not_understanding','dontknow2')">Dont know 2</button>
+    <button onclick="gesture('not_understanding','dontknow3')">Dont know 3</button>
+</div>
+
+<div class="section">
+    <h2>Please</h2>
+    <button onclick="gesture('please','please1')">Please</button>
+</div>
+<div class="section">
+    <h2>Tablet</h2>
+    <input type="text" id="tabletImageUrl" placeholder="Image URL">
+    <br>
+    <button onclick="tabletImage()">Show Image</button>
+    <br><br>
+
+    <input type="text" id="tabletWebUrl" placeholder="Web URL">
+    <br>
+    <button onclick="tabletWeb()">Show Web</button>
+    <button onclick="tabletReload()">Reload</button>
+    <button onclick="tabletShow()">Show</button>
+    <button onclick="tabletHide()">Hide</button>
+</div>
+
+<script>
+    var PEPPER_IP = "192.168.0.107";
+
+    function post(path, data) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://" + PEPPER_IP + ":5000" + path, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send(data);
+    }
+
+    function say() {
+        var text = document.getElementById("speechText").value;
+        post("/say", "text=" + encodeURIComponent(text));
+    }
+
+    function audio(dir) {
+        post("/audio/" + dir, "");
+    }
+
+    function motion(cmd) {
+        post("/motion/" + cmd, "");
+    }
+
+    function posture(name) {
+        post("/posture/" + name, "");
+    }
+
+    function gesture(category, name) {
+        post("/gesture/" + category + "/" + name, "");
+    }
+
+    function tabletImage() {
+        var url = document.getElementById("tabletImageUrl").value;
+        post("/tablet/image", "url=" + encodeURIComponent(url));
+    }
+
+    function tabletWeb() {
+        var url = document.getElementById("tabletWebUrl").value;
+        post("/tablet/web", "url=" + encodeURIComponent(url));
+    }
+
+    function tabletReload() {
+        post("/tablet/reload", "");
+    }
+
+    function tabletShow() {
+        post("/tablet/show", "");
+    }
+
+    function tabletHide() {
+        post("/tablet/hide", "");
+    }
+</script>
+
+</body>
+</html>
